@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "author": "Energy-Harvesting Node",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "light",
+      "top": -110,
+      "left": -150,
+      "attrs": {
+        "value": "512"
+      }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled",
+      "top": -130,
+      "left": 170,
+      "attrs": {
+        "i2cAddress": "0x3c"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led",
+      "top": 60,
+      "left": 200,
+      "attrs": {
+        "color": "green",
+        "label": "TX"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 140,
+      "left": 180,
+      "rotate": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "water",
+      "top": 60,
+      "left": -150,
+      "attrs": {
+        "value": "300"
+      }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t1",
+      "top": 5,
+      "left": -150,
+      "attrs": {
+        "text": "LIGHT (solar panel)"
+      }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "t2",
+      "top": 170,
+      "left": -150,
+      "attrs": {
+        "text": "WATER (sensor)"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp:TX",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "light:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "light:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "light:SIG",
+      "esp:34",
+      "orange",
+      []
+    ],
+    [
+      "water:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "water:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "water:SIG",
+      "esp:35",
+      "blue",
+      []
+    ],
+    [
+      "oled:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "oled:GND",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "oled:SDA",
+      "esp:21",
+      "green",
+      []
+    ],
+    [
+      "oled:SCL",
+      "esp:22",
+      "purple",
+      []
+    ],
+    [
+      "esp:2",
+      "r1:1",
+      "green",
+      []
+    ],
+    [
+      "r1:2",
+      "led:A",
+      "green",
+      []
+    ],
+    [
+      "led:C",
+      "esp:GND.2",
+      "black",
+      []
+    ]
+  ],
+  "dependencies": {}
+}
