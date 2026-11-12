@@ -1,0 +1,12 @@
+# build output
+*.bin
+*.elf
+build/
+
+# editors / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# never commit real credentials
+secrets.h
