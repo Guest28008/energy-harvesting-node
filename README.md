@@ -207,7 +207,13 @@ _Measurements on the real breadboard are to be added: see the tables in [docs/re
 
 ---
 
+## Report
+
+Project proposal and final analysis (PDF): [docs/report/Proposal_and_Analysis_Artykova_Aibiike.pdf](docs/report/Proposal_and_Analysis_Artykova_Aibiike.pdf)
+
+---
+
 ## Author
 
-<!-- TODO (author): full name, course, instructor, semester -->
-Aibiike — course project.
+**Artykova Aibiike** — group EEAIR-25
+Instructor: Mr. Tauheed
