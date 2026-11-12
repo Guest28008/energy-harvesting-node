@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+ body{margin:0;background:#fff;font-family:"DejaVu Sans",Arial,sans-serif}
+ text{font-family:"DejaVu Sans",Arial,sans-serif}
+</style></head>
+<body>
+<svg id="s" xmlns="http://www.w3.org/2000/svg" width="1240" height="830" viewBox="0 0 1240 830"></svg>
+<script>
+const S=document.getElementById('s');
+const NS='http://www.w3.org/2000/svg';
+let P=S;
+function el(t,a,txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;P.appendChild(e);return e;}
+const X=c=>220+c*25;
+const ROW={a:170,b:190,c:210,d:230,e:250,f:300,g:320,h:340,i:360,j:380};
+const Y_GND_T=105, Y_VCAP=125, Y_3V3=525, Y_GND_B=545;
+const RED='#d62828',BLUE='#1d4ed8',ORG='#ea8a00',GRN='#15803d',PUR='#7c3aed',GRY='#555';
+
+// title
+el('text',{x:20,y:32,'font-size':22,'font-weight':'bold'},'Energy-Harvesting Node — breadboard wiring');
+el('text',{x:20,y:56,'font-size':14,fill:'#444'},'Storage: electrolytic capacitors in PARALLEL (+ to VCAP, − to GND). Water sensor is powered from GPIO25. Dot ● = lead/wire in this hole.');
+
+P=el('g',{transform:'translate(0,50)'});
+// board
+el('rect',{x:205,y:80,width:785,height:490,rx:10,fill:'#f4f1ea',stroke:'#bbb'});
+// rails lines
+function rail(y,color,label){
+  el('line',{x1:235,y1:y-10,x2:980,y2:y-10,stroke:color,'stroke-width':2});
+  for(let c=1;c<=30;c++) el('rect',{x:X(c)-3,y:y-3,width:6,height:6,fill:'#c9c4b8'});
+  el('text',{x:262,y:y-14,'font-size':11,fill:color,'font-weight':'bold'},label);
+}
+rail(Y_GND_T,BLUE,'GND (−)');
+rail(Y_VCAP,RED,'VCAP (+, up to 5 V)');
+rail(Y_3V3,ORG,'3V3 (+3.3 V)');
+rail(Y_GND_B,BLUE,'GND (−)');
+// main grid
+for(const r in ROW){for(let c=1;c<=30;c++) el('rect',{x:X(c)-3,y:ROW[r]-3,width:6,height:6,fill:'#c9c4b8'});
+  el('text',{x:212,y:ROW[r]+4,'font-size':10,fill:'#999'},r);}
+el('rect',{x:235,y:268,width:745,height:14,fill:'#e6e1d6'});
+for(let c=1;c<=30;c+=1) if(c%5===0||c===1) el('text',{x:X(c)-5,y:162,'font-size':10,fill:'#999'},c);
+
+function dot(x,y,col){el('circle',{cx:x,cy:y,r:4.5,fill:col||'#111'});}
+function wire(pts,col,w){el('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:col,'stroke-width':w||4,'stroke-linejoin':'round','stroke-linecap':'round'});dot(...pts[0],col);dot(...pts[pts.length-1],col);}
+function label(x,y,t,size,col,weight,anc){el('text',{x,y,'font-size':size||13,fill:col||'#111','font-weight':weight||'normal','text-anchor':anc||'start'},t);}
+
+// component: axial body between two points
+function axial(x1,y1,x2,y2,body,stripeAt,lab,lx,ly){
+  el('line',{x1,y1,x2,y2,stroke:GRY,'stroke-width':2});
+  const mx=(x1+x2)/2,my=(y1+y2)/2,ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+  const g=document.createElementNS(NS,'g');g.setAttribute('transform',`translate(${mx},${my}) rotate(${ang})`);P.appendChild(g);
+  const r=document.createElementNS(NS,'rect');for(const [k,v] of Object.entries({x:-16,y:-6,width:32,height:12,rx:3,fill:body}))r.setAttribute(k,v);g.appendChild(r);
+  if(stripeAt){const s=document.createElementNS(NS,'rect');for(const [k,v] of Object.entries({x:stripeAt>0?9:-14,y:-6,width:5,height:12,fill:'#eee'}))s.setAttribute(k,v);g.appendChild(s);}
+  dot(x1,y1,GRY);dot(x2,y2,GRY);
+  if(lab) label(lx,ly,lab,12,'#111','bold');
+}
+function resistor(x1,y1,x2,y2,lab,lx,ly){
+  el('line',{x1,y1,x2,y2,stroke:GRY,'stroke-width':2});
+  const mx=(x1+x2)/2,my=(y1+y2)/2,ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+  const g=document.createElementNS(NS,'g');g.setAttribute('transform',`translate(${mx},${my}) rotate(${ang})`);P.appendChild(g);
+  const r=document.createElementNS(NS,'rect');for(const [k,v] of Object.entries({x:-13,y:-5,width:26,height:10,rx:4,fill:'#d9b77e',stroke:'#8a6d3b'}))r.setAttribute(k,v);g.appendChild(r);
+  dot(x1,y1,GRY);dot(x2,y2,GRY);label(lx,ly,lab,12,'#111','bold','end');
+}
+// electrolytic "staple" above board: + leg to VCAP, - leg to GND top
+function ecap(cx,lab){
+  const xp=cx-10,xm=cx+10, top=62;
+  el('line',{x1:xp,y1:top+20,x2:xp,y2:Y_VCAP,stroke:GRY,'stroke-width':2});
+  el('line',{x1:xm,y1:top+20,x2:xm,y2:Y_GND_T,stroke:GRY,'stroke-width':2});
+  el('rect',{x:cx-17,y:top-8,width:34,height:30,rx:5,fill:'#1f2937'});
+  el('rect',{x:cx+7,y:top-8,width:10,height:30,fill:'#9ca3af'});
+  label(cx-15,top+11,'+',14,'#fff','bold');
+  dot(xp,Y_VCAP,GRY);dot(xm,Y_GND_T,GRY);
+  if(lab) label(cx-20,top-12,lab,11);
+}
+
+// ---- top GND <-> bottom GND link
+wire([[X(1),Y_GND_T],[214,Y_GND_T],[214,Y_GND_B],[X(1),Y_GND_B]],BLUE);
+// ---- Solar panel
+el('rect',{x:25,y:150,width:150,height:110,rx:6,fill:'#1e3a8a'});
+for(let i=0;i<4;i++)for(let j=0;j<3;j++)el('rect',{x:33+i*35,y:158+j*33,width:31,height:29,fill:'#2b4fb3',stroke:'#93c5fd','stroke-width':0.5});
+label(25,285,'Solar panel 5–6 V',13,'#111','bold');
+label(25,302,'(wires soldered)',12,'#555');
+label(150,167,'+',16,'#fff','bold');label(152,250,'−',18,'#fff','bold');
+wire([[175,170],[X(2),ROW.a]],RED);                       // + -> 2a
+wire([[175,240],[195,240],[195,Y_GND_T],[X(1),Y_GND_T]],BLUE);   // - -> GND top (col1)
+
+// ---- Schottky 1N5819: 2c -> 6c, then wire 6a -> VCAP
+axial(X(2),ROW.c,X(6),ROW.c,'#111',1,'1N5819',X(2)+5,ROW.c+30);
+label(X(2)+5,ROW.c+46,'stripe → right',11,'#555');
+wire([[X(6),ROW.a],[X(6),Y_VCAP]],RED);
+
+// ---- Zener 1N4733A between VCAP (col 9) and GND (col 10), drawn above
+(function(){const xp=X(8),xm=X(9),top=60;
+ el('polyline',{points:`${xp},${Y_VCAP} ${xp},${top} ${xm},${top} ${xm},${Y_GND_T}`,fill:'none',stroke:GRY,'stroke-width':2});
+ el('rect',{x:xp-1,y:top-9,width:26,height:18,rx:3,fill:'#9b2226'});
+ el('rect',{x:xp-1,y:top-9,width:6,height:18,fill:'#111'});
+ dot(xp,Y_VCAP,GRY);dot(xm,Y_GND_T,GRY);
+ label(xp-12,top-14,'1N4733A',11,'#111','bold','end');label(xp-12,top+2,'(Zener 5.1 V,',10,'#555','normal','end');label(xp-12,top+15,'stripe to VCAP)',10,'#555','normal','end');
+ label(xp-30,top+28,'',11);
+})();
+
+// ---- capacitor bank (parallel)
+ecap(X(12)+12,'C1');ecap(X(14)+12,'C2');ecap(X(16)+12,'C3');
+label(X(17)+20,72,'… C10',14,'#111','bold');
+label(X(11),40+0,'',1);
+label(X(8)+5,148,'electrolytic 1000 µF 16–25 V — all in parallel',11,'#111','bold');
+
+// ---- LDO module pins at row f cols 20,21,22
+(function(){const xs=[X(20),X(21),X(22)];
+ el('rect',{x:xs[0]-18,y:ROW.f+8,width:86,height:62,rx:5,fill:'#0f766e'});
+ label(xs[0]-12,ROW.f+32,'LDO 3.3 V',12,'#fff','bold');
+ label(xs[0]-12,ROW.f+50,'(AMS1117 / HT7333)',9,'#d1fae5');
+ ['VIN','GND','OUT'].forEach((t,i)=>{dot(xs[i],ROW.f,'#111');label(xs[i],ROW.f-8,t,8,'#111','bold','middle');});
+ // wires from row j? body covers g..i; use row j holes
+ wire([[xs[0],ROW.j],[xs[0],ROW.j+18],[X(19),ROW.j+18],[X(19),Y_VCAP]],RED);     // VIN -> VCAP
+ wire([[xs[1],ROW.j],[xs[1],Y_GND_B]],BLUE);                                        // GND
+ wire([[xs[2],ROW.j],[xs[2]+10,ROW.j+30],[xs[2]+10,Y_3V3]],ORG);                     // OUT -> 3V3
+})();
+
+// ---- 1000uF on 3V3 rail (below board)
+(function(){const xp=X(24),xm=X(25),top=605;
+ el('line',{x1:xp,y1:Y_3V3,x2:xp,y2:top-8,stroke:GRY,'stroke-width':2});
+ el('line',{x1:xm,y1:Y_GND_B,x2:xm,y2:top-8,stroke:GRY,'stroke-width':2});
+ el('rect',{x:xp-12,y:top-8,width:50,height:30,rx:5,fill:'#1f2937'});el('rect',{x:xm+3,y:top-8,width:10,height:30,fill:'#9ca3af'});
+ label(xp-8,top+12,'+',14,'#fff','bold');
+ dot(xp,Y_3V3,GRY);dot(xm,Y_GND_B,GRY);
+ label(xp-20,top+10,'1000 µF',11,'#111','bold','end');label(xp-20,top+26,'between 3V3 and GND',11,'#555','normal','end');
+})();
+
+// ---- Divider at column 27
+resistor(X(27),Y_VCAP,X(27),ROW.a,'R1 1 MΩ',X(27)-10,150);
+resistor(X(27),ROW.c,X(29),Y_GND_T,'',0,0);
+label(X(30)+12,128,'R2 1 MΩ → GND',11,'#111','bold');
+axial(X(27),ROW.d,X(30),Y_GND_T,'#f2c94c',0,'',0,0);
+label(X(30)+12,146,'100 nF → GND',11,'#111','bold');
+
+// ---- ESP32 block
+const EX=1060;
+el('rect',{x:EX,y:150,width:150,height:280,rx:8,fill:'#111827'});
+label(EX+18,185,'ESP32',22,'#fff','bold');
+label(EX+18,205,'dev board',12,'#9ca3af');
+const pins={'3V3':240,'GND':270,'GPIO34':300};
+for(const [k,y] of Object.entries(pins)){dot(EX,y,'#fbbf24');label(EX+10,y+5,k,12,'#fff','bold');}
+// bottom pins for water sensor
+dot(EX+40,430,'#fbbf24');label(EX+40,420,'25',12,'#fff','bold','middle');
+dot(EX+100,430,'#fbbf24');label(EX+100,420,'35',12,'#fff','bold','middle');
+label(EX+40,400,'power',10,'#9ca3af','normal','middle');label(EX+100,400,'signal',10,'#9ca3af','normal','middle');
+
+wire([[X(30),Y_3V3],[1020,Y_3V3],[1020,240],[EX,240]],ORG);
+wire([[X(30),Y_GND_B],[1035,Y_GND_B],[1035,270],[EX,270]],BLUE);
+wire([[X(27),ROW.e],[1005,ROW.e],[1005,300],[EX,300]],GRN);
+label(X(27)-6,ROW.e+18,'to GPIO34 →',11,GRN,'bold','end');
+
+// ---- Water sensor block
+const BX=1060,BY=590;
+el('rect',{x:BX,y:BY,width:150,height:120,rx:6,fill:'#b91c1c'});
+for(let k=0;k<5;k++){el('rect',{x:BX+30+k*20,y:BY+45,width:6,height:65,fill:'#e5c07b'});}
+label(BX+75,BY+40,'Water sensor',13,'#fff','bold','middle');
+dot(BX+40,BY,'#fbbf24');dot(BX+100,BY,'#fbbf24');
+label(BX+40,BY+18,'+',14,'#fff','bold','middle');label(BX+100,BY+18,'S',13,'#fff','bold','middle');
+wire([[EX+40,430],[BX+40,BY]],PUR);
+wire([[EX+100,430],[BX+100,BY]],GRN);
+dot(BX,BY+100,'#fbbf24');label(BX+8,BY+104,'−',14,'#fff','bold');
+wire([[X(29),Y_GND_B],[X(29),720],[1000,720],[1000,BY+100],[BX,BY+100]],BLUE);
+label(990,BY-90,'',1);
+// legend
+const L=[[RED,'VCAP: panel → diode → capacitors (up to ~5 V)'],[BLUE,'GND: common ground'],[ORG,'3.3 V after the regulator'],[GRN,'analog signals (GPIO34 — VCAP, GPIO35 — water)'],[PUR,'water sensor power (GPIO25, only while measuring)']];
+L.forEach((l,i)=>{el('line',{x1:25,y1:620+i*24,x2:55,y2:620+i*24,stroke:l[0],'stroke-width':5});label(65,625+i*24,l[1],13);});
+label(25,595,'Wire colours:',14,'#111','bold');
+</script>
+</body></html>
