@@ -7,8 +7,11 @@
 > **Short answer:** an **adaptive** one. The node measures how much energy the panel delivered while it slept and sets the next sleep interval to
 > `interval = 1.3 × E_cycle / P_harvest`, so it spends only about 75 % of what it harvests. A four-state machine (HARVEST_ONLY / LOW / NORMAL / RICH) handles the edge cases.
 
-<!-- TODO (author): replace with a photo of the assembled breadboard -->
-![Breadboard wiring](hardware/schematics/breadboard_wiring.png)
+<p align="center">
+  <img src="photos/prototype_overview.jpg" alt="Assembled prototype: solar panel, storage breadboard and ESP32 node with water sensor" width="420">
+</p>
+
+*Assembled prototype: the solar panel (bottom), the storage breadboard with the protection diodes, capacitors and voltage divider (left), and the ESP32 node with the water sensor (right). Wiring diagram: [hardware/schematics](hardware/schematics/breadboard_wiring.png).*
 
 **Video demonstration:** _link to be added_
 
